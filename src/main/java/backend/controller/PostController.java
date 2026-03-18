@@ -48,4 +48,15 @@ public class PostController {
 
         return postRepository.save(post);
     }
+
+    @GetMapping("/{id}")
+    public Post getPost(@PathVariable Long id) {
+        return postRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다. id=" + id));
+    }
+
+    @DeleteMapping("/{id}")
+    public void deletePost(@PathVariable Long id) {
+        postRepository.deleteById(id);
+    }
 }
