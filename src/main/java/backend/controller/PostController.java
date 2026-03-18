@@ -59,4 +59,27 @@ public class PostController {
     public void deletePost(@PathVariable Long id) {
         postRepository.deleteById(id);
     }
+
+    @PutMapping("/{id}")
+public Post updatePost(
+        @PathVariable Long id,
+        @RequestParam("title") String title,
+        @RequestParam("content") String content,
+        @RequestParam(value = "file", required = false) MultipartFile file
+) {
+    Post post = postRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다."));
+
+    post.setTitle(title);
+    post.setContent(content);
+
+    if (file != null && !file.isEmpty()) {
+        FileUploadResult result = fileStorageService.upload(file);
+        post.setAttachmentOriginalName(result.getOriginalFileName());
+        post.setAttachmentStoredName(result.getStoredFileName());
+        post.setAttachmentUrl(result.getFileUrl());
+    }
+
+    return postRepository.save(post);
+}
 }
